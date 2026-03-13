@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Habit Tracker</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Cairo:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="static/css/main.css" />
+  </head>
+  <body>
+    <svg style="display: none" xmlns="http://www.w3.org/2000/svg">
+      <symbol
+        id="ic-grid"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <rect x="3" y="3" width="7" height="7" />
+        <rect x="14" y="3" width="7" height="7" />
+        <rect x="3" y="14" width="7" height="7" />
+        <rect x="14" y="14" width="7" height="7" />
+      </symbol>
+      <symbol
+        id="ic-bar"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+        <line x1="18" y1="20" x2="18" y2="10" />
+        <line x1="12" y1="20" x2="12" y2="4" />
+        <line x1="6" y1="20" x2="6" y2="14" />
+      </symbol>
+      <symbol
+        id="ic-target"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <circle cx="12" cy="12" r="6" />
+        <circle cx="12" cy="12" r="2" />
+      </symbol>
+      <symbol
+        id="ic-activity"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+      </symbol>
+      <symbol
+        id="ic-focus"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="3" />
+        <path
+          d="M3 9V6a2 2 0 0 1 2-2h3M3 15v3a2 2 0 0 0 2 2h3M21 9V6a2 2 0 0 0-2-2h-3M21 15v3a2 2 0 0 1-2 2h-3"
+        />
+      </symbol>
+      <symbol
+        id="ic-plus"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </symbol>
+      <symbol
+        id="ic-sliders"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+        <line x1="4" y1="21" x2="4" y2="14" />
+        <line x1="4" y1="10" x2="4" y2="3" />
+        <line x1="12" y1="21" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12" y2="3" />
+        <line x1="20" y1="21" x2="20" y2="16" />
+        <line x1="20" y1="12" x2="20" y2="3" />
+        <line x1="1" y1="14" x2="7" y2="14" />
+        <line x1="9" y1="8" x2="15" y2="8" />
+        <line x1="17" y1="16" x2="23" y2="16" />
+      </symbol>
+      <symbol
+        id="ic-edit"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+      </symbol>
+      <symbol
+        id="ic-trash"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="3 6 5 6 21 6" />
+        <path d="M19 6l-1 14H6L5 6" />
+        <path d="M10 11v6" />
+        <path d="M14 11v6" />
+      </symbol>
+      <symbol
+        id="ic-x"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </symbol>
+      <symbol
+        id="ic-info"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="16" x2="12" y2="12" />
+        <line x1="12" y1="8" x2="12.01" y2="8" />
+      </symbol>
+      <symbol
+        id="ic-download"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </symbol>
+      <symbol
+        id="ic-zap"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+      </symbol>
+      <symbol
+        id="ic-award"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="8" r="6" />
+        <path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11" />
+      </symbol>
+      <symbol
+        id="ic-flame"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"
+        />
+      </symbol>
+    </svg>
+
+    <header>
+      <div class="logo">Habit <span>Tracker</span></div>
+      <nav>
+        <button class="tab active" onclick="App.switchTab('tracker', this)">
+          <svg width="13" height="13"><use href="#ic-grid" /></svg>Tracker
+        </button>
+        <button class="tab" onclick="App.switchTab('stats', this)">
+          <svg width="13" height="13"><use href="#ic-bar" /></svg>Stats
+        </button>
+        <button class="tab" onclick="App.switchTab('goals', this)">
+          <svg width="13" height="13"><use href="#ic-target" /></svg>Goals
+        </button>
+        <button class="tab" onclick="App.switchTab('heatmap', this)">
+          <svg width="13" height="13"><use href="#ic-activity" /></svg>Heatmap
+        </button>
+        <button class="tab" onclick="App.switchTab('focus', this)">
+          <svg width="13" height="13"><use href="#ic-focus" /></svg>Focus
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- TRACKER -->
+      <div id="view-tracker" class="view active">
+        <div class="controls">
+          <select id="sel-year" onchange="App.renderTracker()"></select>
+          <select id="sel-month" onchange="App.renderTracker()"></select>
+          <button class="btn btn-dark" onclick="App.openAddHabitModal()">
+            <svg width="13" height="13"><use href="#ic-plus" /></svg>عادة جديدة
+          </button>
+          <button class="btn" onclick="App.openManage()">
+            <svg width="13" height="13"><use href="#ic-sliders" /></svg>إدارة
+          </button>
+          <button class="btn" onclick="App.exportCSV()">
+            <svg width="13" height="13"><use href="#ic-download" /></svg>CSV
+          </button>
+        </div>
+        <div class="table-scroll"><table id="main-table"></table></div>
+      </div>
+
+      <!-- STATS -->
+      <div id="view-stats" class="view">
+        <div class="controls">
+          <select id="stats-year" onchange="App.renderStats()"></select>
+          <select id="stats-month" onchange="App.renderStats()"></select>
+        </div>
+        <div class="stat-grid" id="stat-cards"></div>
+        <div class="card" id="consistency-card"></div>
+        <div class="charts-row">
+          <div class="card">
+            <div class="card-title">Weekly Progress %</div>
+            <div class="chart-wrap"><canvas id="chart-weekly"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Daily Completion %</div>
+            <div class="chart-wrap"><canvas id="chart-daily"></canvas></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Habit Performance</div>
+          <div id="habit-bars"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            Habits Radar
+            <span
+              class="info-tip"
+              title="كل ضلع = عادة. كلما اتسع الشكل = أداء أفضل"
+              ><svg width="14" height="14"><use href="#ic-info" /></svg
+            ></span>
+          </div>
+          <div class="chart-wrap" style="height: 260px">
+            <canvas id="chart-radar"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="14" height="14"><use href="#ic-zap" /></svg> Smart
+            Insights
+          </div>
+          <div id="insights-container"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="14" height="14"><use href="#ic-award" /></svg> Streak
+            Board
+          </div>
+          <div id="streak-board"></div>
+        </div>
+      </div>
+
+      <!-- GOALS -->
+      <div id="view-goals" class="view">
+        <div class="controls">
+          <button class="btn btn-dark" onclick="App.openAddGoal('weekly')">
+            <svg width="13" height="13"><use href="#ic-plus" /></svg>أسبوعي
+          </button>
+          <button class="btn btn-dark" onclick="App.openAddGoal('monthly')">
+            <svg width="13" height="13"><use href="#ic-plus" /></svg>شهري
+          </button>
+          <button class="btn btn-dark" onclick="App.openAddGoal('yearly')">
+            <svg width="13" height="13"><use href="#ic-plus" /></svg>سنوي
+          </button>
+        </div>
+
+        <!-- 3 summary chips -->
+        <div class="goals-summary-row" id="goals-summary"></div>
+
+        <!-- Multi-line progress chart -->
+        <div class="card">
+          <div class="card-title">
+            تقدم الأهداف التراكمي
+            <span
+              class="info-tip"
+              title="كل خط = نوع هدف. المحور الأفقي = رقم الهدف بالتسلسل. المحور الرأسي = نسبة الأهداف المكتملة حتى الآن من ذلك النوع"
+              ><svg width="14" height="14"><use href="#ic-info" /></svg
+            ></span>
+          </div>
+          <div class="goals-chart-legend" id="goals-legend"></div>
+          <div class="chart-wrap" style="height: 240px">
+            <canvas id="chart-goals"></canvas>
+          </div>
+        </div>
+
+        <!-- 3 donut charts -->
+        <div class="goals-donuts-row">
+          <div class="card goals-donut-card">
+            <div class="card-title" style="justify-content: center">أسبوعي</div>
+            <div class="donut-wrap">
+              <canvas id="donut-weekly"></canvas>
+              <div class="donut-label" id="dlbl-weekly"></div>
+            </div>
+          </div>
+          <div class="card goals-donut-card">
+            <div class="card-title" style="justify-content: center">شهري</div>
+            <div class="donut-wrap">
+              <canvas id="donut-monthly"></canvas>
+              <div class="donut-label" id="dlbl-monthly"></div>
+            </div>
+          </div>
+          <div class="card goals-donut-card">
+            <div class="card-title" style="justify-content: center">سنوي</div>
+            <div class="donut-wrap">
+              <canvas id="donut-yearly"></canvas>
+              <div class="donut-label" id="dlbl-yearly"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="goals-container"></div>
+      </div>
+
+      <!-- HEATMAP -->
+      <div id="view-heatmap" class="view">
+        <div class="controls">
+          <select id="hm-year" onchange="App.renderHeatmap()"></select>
+          <select id="hm-habit" onchange="App.renderHeatmap()"></select>
+        </div>
+        <div class="card">
+          <div class="card-title">Activity Map</div>
+          <div id="heatmap-grid"></div>
+          <div class="hm-legend">
+            Less
+            <div class="hm-legend-cells">
+              <div style="background: #e8e8e8"></div>
+              <div style="background: #bbb"></div>
+              <div style="background: #888"></div>
+              <div style="background: #444"></div>
+              <div style="background: #111"></div>
+            </div>
+            More
+          </div>
+        </div>
+      </div>
+
+      <!-- FOCUS MODE -->
+      <div id="view-focus" class="view">
+        <div class="focus-header">
+          <div>
+            <div id="focus-date-main"></div>
+            <div id="focus-date-sub"></div>
+          </div>
+          <div id="focus-nav">
+            <button class="btn" onclick="App.focusChangeDay(-1)">
+              ← السابق
+            </button>
+            <button class="btn btn-dark" onclick="App.focusToday()">
+              اليوم
+            </button>
+            <button class="btn" onclick="App.focusChangeDay(1)">
+              التالي →
+            </button>
+          </div>
+        </div>
+        <div id="focus-ring-wrap"></div>
+        <div id="focus-banner"></div>
+        <div id="focus-habits"></div>
+        <div class="card" style="margin-top: 14px">
+          <div class="card-title">
+            <svg width="13" height="13"><use href="#ic-info" /></svg> ملاحظة
+            اليوم
+          </div>
+          <textarea
+            id="focus-note"
+            placeholder="سجّل ملاحظتك لهذا اليوم..."
+            rows="3"
+            oninput="App.saveDayNote(this.value)"
+          ></textarea>
+        </div>
+        <div class="card" style="margin-top: 12px">
+          <div class="card-title">آخر 7 أيام</div>
+          <div id="focus-timeline"></div>
+        </div>
+      </div>
+    </main>
+
+    <div id="toast"></div>
+
+    <!-- MODAL: Add Habit -->
+    <div class="overlay" id="m-add-habit">
+      <div class="modal" style="width: 440px">
+        <div class="modal-header">
+          <h3 id="habit-modal-title">عادة جديدة</h3>
+          <button class="icon-btn" onclick="App.closeModal('m-add-habit')">
+            <svg width="16" height="16"><use href="#ic-x" /></svg>
+          </button>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>اسم العادة *</label
+            ><input
+              type="text"
+              id="in-name"
+              placeholder="مثال: قراءة 30 دقيقة"
+            />
+          </div>
+        </div>
+        <div class="form-row two-col">
+          <div class="form-group">
+            <label>الفئة</label
+            ><select id="in-category">
+              <option value="health">الصحة</option>
+              <option value="learning">التعلم</option>
+              <option value="fitness">اللياقة</option>
+              <option value="mindfulness">التأمل</option>
+              <option value="productivity">الإنتاجية</option>
+              <option value="other">أخرى</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>الهدف (أيام/شهر)</label
+            ><input type="number" id="in-goal" value="30" min="1" max="31" />
+          </div>
+        </div>
+        <div class="form-row two-col">
+          <div class="form-group">
+            <label>التكرار</label
+            ><select id="in-freq">
+              <option value="daily">يومي</option>
+              <option value="weekdays">أيام العمل</option>
+              <option value="custom">مخصص</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>وقت التذكير</label
+            ><input type="text" id="in-reminder" placeholder="08:00" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>ملاحظة</label
+            ><textarea
+              id="in-note"
+              rows="2"
+              placeholder="معلومات إضافية..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn" onclick="App.closeModal('m-add-habit')">
+            إلغاء</button
+          ><button
+            class="btn btn-dark"
+            id="habit-submit-btn"
+            onclick="App.submitHabit()"
+          >
+            إضافة
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Manage -->
+    <div class="overlay" id="m-manage">
+      <div class="modal" style="width: 480px">
+        <div class="modal-header">
+          <h3>إدارة العادات</h3>
+          <button class="icon-btn" onclick="App.closeModal('m-manage')">
+            <svg width="16" height="16"><use href="#ic-x" /></svg>
+          </button>
+        </div>
+        <div id="manage-list" style="max-height: 420px; overflow-y: auto"></div>
+        <div class="modal-actions" style="margin-top: 14px">
+          <button class="btn btn-dark" onclick="App.closeModal('m-manage')">
+            إغلاق
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Edit Habit -->
+    <div class="overlay" id="m-edit-habit">
+      <div class="modal" style="width: 440px">
+        <div class="modal-header">
+          <h3>تعديل العادة</h3>
+          <button class="icon-btn" onclick="App.closeModal('m-edit-habit')">
+            <svg width="16" height="16"><use href="#ic-x" /></svg>
+          </button>
+        </div>
+        <input type="hidden" id="edit-habit-id" />
+        <div class="form-row">
+          <div class="form-group">
+            <label>الاسم *</label><input type="text" id="edit-name" />
+          </div>
+        </div>
+        <div class="form-row two-col">
+          <div class="form-group">
+            <label>الفئة</label
+            ><select id="edit-category">
+              <option value="health">الصحة</option>
+              <option value="learning">التعلم</option>
+              <option value="fitness">اللياقة</option>
+              <option value="mindfulness">التأمل</option>
+              <option value="productivity">الإنتاجية</option>
+              <option value="other">أخرى</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>الهدف</label
+            ><input type="number" id="edit-goal" min="1" max="31" />
+          </div>
+        </div>
+        <div class="form-row two-col">
+          <div class="form-group">
+            <label>التكرار</label
+            ><select id="edit-freq">
+              <option value="daily">يومي</option>
+              <option value="weekdays">أيام العمل</option>
+              <option value="custom">مخصص</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>وقت التذكير</label><input type="text" id="edit-reminder" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>ملاحظة</label><textarea id="edit-note" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn" onclick="App.closeModal('m-edit-habit')">
+            إلغاء</button
+          ><button class="btn btn-dark" onclick="App.submitEditHabit()">
+            حفظ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: Add Goal -->
+    <div class="overlay" id="m-add-goal">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="goal-modal-title">هدف جديد</h3>
+          <button class="icon-btn" onclick="App.closeModal('m-add-goal')">
+            <svg width="16" height="16"><use href="#ic-x" /></svg>
+          </button>
+        </div>
+        <input type="hidden" id="goal-type" />
+        <div class="form-group">
+          <label>الهدف *</label
+          ><textarea
+            id="goal-text"
+            rows="3"
+            placeholder="اكتب هدفك..."
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label>الموعد النهائي</label
+          ><input
+            type="text"
+            id="goal-deadline"
+            placeholder="نهاية مارس 2026"
+          />
+        </div>
+        <div class="modal-actions">
+          <button class="btn" onclick="App.closeModal('m-add-goal')">
+            إلغاء</button
+          ><button class="btn btn-dark" onclick="App.submitGoal()">حفظ</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="static/js/main.js"></script>
+    <script src="static/js/mob_tracker.js"></script>
+  </body>
+</html>
