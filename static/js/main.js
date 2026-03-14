@@ -1,37 +1,25 @@
 /* ═══════════════════════════════════════════════════════════
-   HABIT TRACKER — app.js
-   ───────────────────────────────────────────────────────────
-   NEW features:
-   ① Goals multi-line chart  — one line per type (weekly/monthly/yearly)
-   ② Goals donut charts      — visual completion per type
-   ③ Goals summary chips     — quick stats at top of Goals tab
-   ④ Consistency Score ring  — weighted grade S/A/B/C/D/F
-   ⑤ Smart Insights          — best day, worst habit, trend
-   ⑥ Streak Board            — current + all-time best per habit
-   ⑦ Focus Mode              — today ring + motivational banner + 7-day timeline
-   ⑧ Day notes               — per-day journal in Focus tab
-   ⑨ Toast notifications     — feedback on every action
-   ⑩ CSV export              — full month data download
+   HABIT TRACKER — main.js  (English-only, no i18n)
 ═══════════════════════════════════════════════════════════ */
 
 const App = (() => {
   /* ── CONSTANTS ──────────────────────────────────────── */
   const YEARS = [2026, 2027, 2028, 2029, 2030];
   const MONTHS = [
-    "يناير",
-    "فبراير",
-    "مارس",
-    "أبريل",
-    "مايو",
-    "يونيو",
-    "يوليو",
-    "أغسطس",
-    "سبتمبر",
-    "أكتوبر",
-    "نوفمبر",
-    "ديسمبر",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
-  const MONTHS_EN = [
+  const MONTHS_S = [
     "Jan",
     "Feb",
     "Mar",
@@ -45,25 +33,36 @@ const App = (() => {
     "Nov",
     "Dec",
   ];
-  const DAYS_AR = ["أح", "إث", "ثل", "أر", "خم", "جم", "سب"];
-  const DAYS_FULL = [
-    "الأحد",
-    "الإثنين",
-    "الثلاثاء",
-    "الأربعاء",
-    "الخميس",
-    "الجمعة",
-    "السبت",
+  const DAYS_S = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+  const DAYS_F = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
   ];
-  const CAT = {
-    health: "الصحة",
-    learning: "التعلم",
-    fitness: "اللياقة",
-    mindfulness: "التأمل",
-    productivity: "الإنتاجية",
-    other: "أخرى",
+  const CAT_LABELS = {
+    health: "Health",
+    learning: "Learning",
+    fitness: "Fitness",
+    mindfulness: "Mindfulness",
+    productivity: "Productivity",
+    other: "Other",
   };
-  const FREQ = { daily: "يومي", weekdays: "أيام العمل", custom: "مخصص" };
+  const CAT = (k) => CAT_LABELS[k] || k;
+  const FREQ = (k) =>
+    ({ daily: "Daily", weekdays: "Weekdays", custom: "Custom" })[k] || k;
+  const QUOTES = [
+    "Every day is a new chance to succeed.",
+    "Consistency makes the difference.",
+    "Never underestimate the power of one day.",
+    "Strength comes from continuity.",
+    "Start small, keep going long.",
+    "Daily achievement builds the future.",
+    "You are closer than you think.",
+  ];
 
   /* Chart defaults */
   const FONT = "IBM Plex Mono";
@@ -76,20 +75,8 @@ const App = (() => {
   };
   const TICK = { color: "#999", font: { family: FONT, size: 9 } };
   const GRID = { color: "#ebebeb" };
-
-  /* Goal type line colors */
   const G_CLR = { weekly: "#111", monthly: "#666", yearly: "#bbb" };
-  const G_LBL = { weekly: "أسبوعي", monthly: "شهري", yearly: "سنوي" };
-
-  const QUOTES = [
-    "كل يوم هو فرصة جديدة للنجاح",
-    "الانتظام يصنع الفارق",
-    "لا تقلل من قوة يوم واحد",
-    "القوة تأتي من الاستمرارية",
-    "ابدأ صغيراً، استمر طويلاً",
-    "الإنجاز اليومي يبني المستقبل",
-    "أنت أقرب مما تظن",
-  ];
+  const G_LBL = { weekly: "Weekly", monthly: "Monthly", yearly: "Yearly" };
 
   let _charts = {};
   let _focusDate = new Date();
@@ -124,63 +111,11 @@ const App = (() => {
       try {
         localStorage.setItem(this.KEY, JSON.stringify(d));
       } catch (e) {
-        alert("تعذّر الحفظ — مساحة التخزين ممتلئة.");
+        alert("Storage full — could not save.");
       }
     },
     _default() {
-      return {
-        habits: [
-          {
-            id: 1,
-            name: "Habit 1",
-            goal: 30,
-            category: "health",
-            freq: "daily",
-            reminder: "",
-            note: "",
-          },
-          {
-            id: 2,
-            name: "Habit 2",
-            goal: 30,
-            category: "learning",
-            freq: "daily",
-            reminder: "",
-            note: "",
-          },
-          {
-            id: 3,
-            name: "Habit 3",
-            goal: 30,
-            category: "fitness",
-            freq: "daily",
-            reminder: "",
-            note: "",
-          },
-          {
-            id: 4,
-            name: "Habit 4",
-            goal: 30,
-            category: "productivity",
-            freq: "daily",
-            reminder: "",
-            note: "",
-          },
-          {
-            id: 5,
-            name: "Habit 5",
-            goal: 30,
-            category: "other",
-            freq: "daily",
-            reminder: "",
-            note: "",
-          },
-        ],
-        checks: {},
-        goals: [],
-        dayNotes: {},
-        nextId: 6,
-      };
+      return { habits: [], checks: {}, goals: [], dayNotes: {}, nextId: 1 };
     },
   };
 
@@ -203,25 +138,21 @@ const App = (() => {
   const pct = (n, d) => (d > 0 ? Math.min(Math.round((n / d) * 100), 100) : 0);
 
   function countHabit(y, m, hid) {
-    const n = daysIn(y, m);
     let c = 0;
-    for (let d = 1; d <= n; d++) if (isOn(y, m, hid, d)) c++;
+    for (let d = 1; d <= daysIn(y, m); d++) if (isOn(y, m, hid, d)) c++;
     return c;
   }
   function countDay(y, m, d) {
     return D.habits.filter((h) => isOn(y, m, h.id, d)).length;
   }
-
-  /* Current streak for one habit ending at (y,m,d) */
   function streakAt(hid, y, m, d) {
     let cur = 0,
       td = d,
       tm = m,
       ty = y;
     while (ty >= 2026) {
-      if (isOn(ty, tm, hid, td)) {
-        cur++;
-      } else break;
+      if (isOn(ty, tm, hid, td)) cur++;
+      else break;
       td--;
       if (td < 1) {
         tm--;
@@ -234,14 +165,12 @@ const App = (() => {
     }
     return cur;
   }
-  /* Best ever streak for one habit */
   function bestStreak(hid) {
     let best = 0,
       cur = 0;
     YEARS.forEach((y) => {
       for (let m = 0; m < 12; m++) {
-        const n = daysIn(y, m);
-        for (let d = 1; d <= n; d++) {
+        for (let d = 1; d <= daysIn(y, m); d++) {
           if (isOn(y, m, hid, d)) {
             cur++;
             best = Math.max(best, cur);
@@ -296,13 +225,15 @@ const App = (() => {
     const el = document.getElementById("hm-habit");
     if (!el) return;
     el.innerHTML =
-      '<option value="all">كل العادات</option>' +
+      '<option value="all">All Habits</option>' +
       D.habits
         .map((h) => `<option value="${h.id}">${esc(h.name)}</option>`)
         .join("");
   }
 
-  /* ── TRACKER ────────────────────────────────────────── */
+  /* ══════════════════════════════════════════════════════
+     TRACKER — daily table + 3 sub-tables
+  ══════════════════════════════════════════════════════ */
   function renderTracker() {
     const y = +document.getElementById("sel-year").value;
     const m = +document.getElementById("sel-month").value;
@@ -317,9 +248,10 @@ const App = (() => {
       weeks.push({ w, days: ds });
     }
 
+    /* ── header ── */
     let o = "<thead>";
     o += `<tr><th colspan="${3 + days}" class="th-title">${MONTHS[m]} ${y} — Habit Tracker</th></tr>`;
-    o += `<tr><th class="col-name" rowspan="3">العادة</th>`;
+    o += `<tr><th class="col-name" rowspan="3">Habit</th>`;
     weeks.forEach((wk) => {
       const cls = wk.w > 1 ? `th-week th-week-${wk.w}` : "th-week";
       o += `<th colspan="${wk.days.length}" class="${cls}">W${wk.w}</th>`;
@@ -327,31 +259,38 @@ const App = (() => {
     o += `<th class="col-goal" rowspan="2">Goal</th><th class="col-prog" rowspan="2">Progress</th></tr>`;
     o += "<tr>";
     for (let d = 1; d <= days; d++) o += `<th class="hd">${d}</th>`;
-    o += "</tr>";
-    o += "<tr>";
+    o += "</tr><tr>";
     for (let d = 1; d <= days; d++)
-      o += `<th class="hd">${DAYS_AR[new Date(y, m, d).getDay()]}</th>`;
-    o += "</tr>";
-    o += "</thead><tbody>";
+      o += `<th class="hd">${DAYS_S[new Date(y, m, d).getDay()]}</th>`;
+    o += "</tr></thead><tbody>";
 
+    /* ── habit rows ── */
     D.habits.forEach((hb) => {
       const cnt = countHabit(y, m, hb.id),
         goal = hb.goal || 30,
         p = pct(cnt, goal),
         cat = hb.category || "other";
       o += `<tr data-hid="${hb.id}">`;
-      o += `<td class="col-name"><div class="col-name-inner"><div class="cat-dot cat-${cat}" title="${esc(CAT[cat] || "")}"></div><span class="habit-name-text" title="${esc(hb.name)}">${esc(hb.name)}</span></div></td>`;
+      o +=
+        `<td class="col-name"><div class="col-name-inner">` +
+        `<div class="cat-dot cat-${cat}" title="${esc(CAT(cat))}"></div>` +
+        `<span class="habit-name-text" title="${esc(hb.name)}">${esc(hb.name)}</span></div></td>`;
       for (let d = 1; d <= days; d++) {
         const on = isOn(y, m, hb.id, d);
-        o += `<td class="cb dw${weekOf(d)}${on ? " on" : ""}" onclick="App.toggleCell(${y},${m},${hb.id},${d},this)">${on ? "✓" : "·"}</td>`;
+        o +=
+          `<td class="cb dw${weekOf(d)}${on ? " on" : ""}" ` +
+          `onclick="App.toggleCell(${y},${m},${hb.id},${d},this)">${on ? "✓" : "·"}</td>`;
       }
       o += `<td class="col-goal" id="gc-${hb.id}">${cnt}/${goal}</td>`;
-      o += `<td class="col-prog" id="gp-${hb.id}"><span class="prog-pct">${p}%</span><div class="prog-bar"><div class="prog-fill" style="width:${p}%"></div></div></td>`;
+      o +=
+        `<td class="col-prog" id="gp-${hb.id}">` +
+        `<span class="prog-pct">${p}%</span>` +
+        `<div class="prog-bar"><div class="prog-fill" style="width:${p}%"></div></div></td>`;
       o += "</tr>";
     });
 
-    // Day summary
-    o += '<tr class="sum-row"><td class="sum-label">% اليوم</td>';
+    /* ── day % summary ── */
+    o += `<tr class="sum-row"><td class="sum-label">Day %</td>`;
     for (let d = 1; d <= days; d++) {
       const c = countDay(y, m, d),
         t = D.habits.length;
@@ -359,7 +298,7 @@ const App = (() => {
     }
     o += '<td colspan="2"></td></tr>';
 
-    // Week summary
+    /* ── week % summary ── */
     o += '<tr class="sum-row"><td class="sum-label">Week %</td>';
     const usedW = {};
     for (let d = 1; d <= days; d++) {
@@ -378,21 +317,14 @@ const App = (() => {
     }
     o += '<td colspan="2"></td></tr></tbody>';
     document.getElementById("main-table").innerHTML = o;
+
+    /* render sub-tables */
+    renderWeeklyTable(y, m);
+    renderMonthlyTable(y, m);
+    renderYearlyTable(y, m);
   }
 
-  function toggleCell(y, m, hid, d, el) {
-    const k = ck(y, m, hid, d);
-    if (D.checks[k]) delete D.checks[k];
-    else D.checks[k] = 1;
-    save();
-    const on = !!D.checks[k];
-    el.textContent = on ? "✓" : "·";
-    el.classList.toggle("on", on);
-    _liveRow(y, m, hid);
-    _liveDay(y, m, d);
-    _liveWeek(y, m, weekOf(d));
-    toast(on ? "✓ مكتمل" : "○ ألغيت");
-  }
+  /* ── live update helpers (called by toggleCell) ── */
   function _liveRow(y, m, hid) {
     const hb = D.habits.find((h) => h.id === hid);
     if (!hb) return;
@@ -403,7 +335,9 @@ const App = (() => {
       gp = document.getElementById(`gp-${hid}`);
     if (gc) gc.textContent = `${cnt}/${goal}`;
     if (gp)
-      gp.innerHTML = `<span class="prog-pct">${p}%</span><div class="prog-bar"><div class="prog-fill" style="width:${p}%"></div></div>`;
+      gp.innerHTML =
+        `<span class="prog-pct">${p}%</span>` +
+        `<div class="prog-bar"><div class="prog-fill" style="width:${p}%"></div></div>`;
   }
   function _liveDay(y, m, d) {
     const el = document.getElementById(`sd-${d}`);
@@ -434,8 +368,250 @@ const App = (() => {
     });
     el.textContent = pct(wt, wp) + "%";
   }
+  /* live update for the 3 sub-tables after each cell toggle */
+  function _liveSubTables(y, m) {
+    renderWeeklyTable(y, m);
+    renderMonthlyTable(y, m);
+    renderYearlyTable(y, m);
+  }
 
-  /* ── STATS ──────────────────────────────────────────── */
+  function toggleCell(y, m, hid, d, el) {
+    const k = ck(y, m, hid, d);
+    if (D.checks[k]) delete D.checks[k];
+    else D.checks[k] = 1;
+    save();
+    const on = !!D.checks[k];
+    el.textContent = on ? "✓" : "·";
+    el.classList.toggle("on", on);
+    _liveRow(y, m, hid);
+    _liveDay(y, m, d);
+    _liveWeek(y, m, weekOf(d));
+    _liveSubTables(y, m); /* ← live update weekly/monthly/yearly */
+    toast(on ? "✓ Done" : "○ Undone");
+  }
+
+  /* ══════════════════════════════════════════════════════
+     WEEKLY TRACKING TABLE
+     habit × week — shows done/total per week + overall %
+  ══════════════════════════════════════════════════════ */
+  function renderWeeklyTable(y, m) {
+    const el = document.getElementById("table-weekly");
+    if (!el) return;
+    const days = daysIn(y, m),
+      numW = weekOf(days);
+    if (!D.habits.length) {
+      el.innerHTML =
+        '<tbody><tr><td colspan="99" class="empty">No habits yet — add one above.</td></tr></tbody>';
+      return;
+    }
+    const wks = [];
+    for (let w = 1; w <= numW; w++) {
+      const s = (w - 1) * 7 + 1,
+        e = Math.min(w * 7, days);
+      wks.push({ w, s, e, total: e - s + 1 });
+    }
+    let o = `<thead><tr>
+      <th class="col-name th-title" style="text-align:left;padding:8px 10px">Habit</th>`;
+    wks.forEach(
+      (wk) =>
+        (o += `<th class="th-week">W${wk.w}<br><span style="font-weight:400;font-size:0.58rem">${wk.s}–${wk.e}</span></th>`),
+    );
+    o += `<th class="col-goal">Total</th><th class="col-prog" style="min-width:90px">%</th>
+    </tr></thead><tbody>`;
+
+    D.habits.forEach((hb) => {
+      const cat = hb.category || "other",
+        goal = hb.goal || 30;
+      let totalDone = 0;
+      o +=
+        `<tr><td class="col-name"><div class="col-name-inner">` +
+        `<div class="cat-dot cat-${cat}"></div>` +
+        `<span class="habit-name-text">${esc(hb.name)}</span></div></td>`;
+      wks.forEach((wk) => {
+        let done = 0;
+        for (let d = wk.s; d <= wk.e; d++) if (isOn(y, m, hb.id, d)) done++;
+        totalDone += done;
+        const p = pct(done, wk.total);
+        const bg =
+          p === 100
+            ? "background:#111;color:#fff"
+            : p >= 50
+              ? "background:#f0f0ee"
+              : "";
+        const tc = p === 100 ? "#fff" : "#999";
+        o +=
+          `<td class="col-goal" style="${bg}">${done}/${wk.total}` +
+          `<br><span style="font-size:0.58rem;color:${tc}">${p}%</span></td>`;
+      });
+      const tp = pct(totalDone, goal);
+      o +=
+        `<td class="col-goal">${totalDone}/${goal}</td>` +
+        `<td class="col-prog"><span class="prog-pct">${tp}%</span>` +
+        `<div class="prog-bar"><div class="prog-fill" style="width:${tp}%"></div></div></td></tr>`;
+    });
+
+    /* summary row */
+    o += `<tr class="sum-row"><td class="sum-label">Week %</td>`;
+    wks.forEach((wk) => {
+      let wt = 0,
+        wp = 0;
+      for (let d = wk.s; d <= wk.e; d++) {
+        wt += countDay(y, m, d);
+        wp += D.habits.length;
+      }
+      o += `<td style="font-family:var(--mono);font-size:0.68rem;font-weight:700;text-align:center;padding:4px 2px">${pct(wt, wp)}%</td>`;
+    });
+    o += `<td colspan="2"></td></tr></tbody>`;
+    el.innerHTML = o;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     MONTHLY TRACKING TABLE
+     habit × last 6 months — current month highlighted
+  ══════════════════════════════════════════════════════ */
+  function renderMonthlyTable(y, m) {
+    const el = document.getElementById("table-monthly");
+    if (!el) return;
+    if (!D.habits.length) {
+      el.innerHTML =
+        '<tbody><tr><td colspan="99" class="empty">No habits yet — add one above.</td></tr></tbody>';
+      return;
+    }
+    const months6 = [];
+    for (let i = 5; i >= 0; i--) {
+      let mm = m - i,
+        yy = y;
+      if (mm < 0) {
+        mm += 12;
+        yy--;
+      }
+      months6.push({ y: yy, m: mm });
+    }
+    let o = `<thead><tr>
+      <th class="col-name th-title" style="text-align:left;padding:8px 10px">Habit</th>`;
+    months6.forEach((mo) => {
+      const isCur = mo.y === y && mo.m === m;
+      o +=
+        `<th class="${isCur ? "th-title" : "th-week"}" style="${isCur ? "" : ""}">` +
+        `${MONTHS_S[mo.m]}<br><span style="font-weight:400;font-size:0.58rem;opacity:0.7">${mo.y}</span></th>`;
+    });
+    o += `<th class="col-goal">Avg</th></tr></thead><tbody>`;
+
+    D.habits.forEach((hb) => {
+      const cat = hb.category || "other",
+        goal = hb.goal || 30;
+      let sumPct = 0;
+      o +=
+        `<tr><td class="col-name"><div class="col-name-inner">` +
+        `<div class="cat-dot cat-${cat}"></div>` +
+        `<span class="habit-name-text">${esc(hb.name)}</span></div></td>`;
+      months6.forEach((mo) => {
+        const cnt = countHabit(mo.y, mo.m, hb.id),
+          p = pct(cnt, goal);
+        sumPct += p;
+        const isCur = mo.y === y && mo.m === m;
+        const bg =
+          p === 100
+            ? "background:#111;color:#fff"
+            : p >= 50
+              ? "background:#f0f0ee"
+              : isCur
+                ? "background:#fafafa;border:2px solid #111"
+                : "";
+        const tc = p === 100 ? "#fff" : "#999";
+        o +=
+          `<td class="col-goal" style="${bg}">${cnt}/${goal}` +
+          `<br><span style="font-size:0.58rem;color:${tc}">${p}%</span></td>`;
+      });
+      const avg = Math.round(sumPct / months6.length);
+      o += `<td class="col-goal" style="font-weight:700">${avg}%</td></tr>`;
+    });
+
+    /* overall summary */
+    o += `<tr class="sum-row"><td class="sum-label">Overall %</td>`;
+    months6.forEach((mo) => {
+      const d2 = daysIn(mo.y, mo.m);
+      let tot = 0;
+      for (let d = 1; d <= d2; d++) tot += countDay(mo.y, mo.m, d);
+      const p = pct(tot, D.habits.length * d2);
+      o += `<td style="font-family:var(--mono);font-size:0.68rem;font-weight:700;text-align:center;padding:4px">${p}%</td>`;
+    });
+    o += `<td></td></tr></tbody>`;
+    el.innerHTML = o;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     YEARLY TRACKING TABLE
+     habit × all 12 months of selected year
+  ══════════════════════════════════════════════════════ */
+  function renderYearlyTable(y, m) {
+    const el = document.getElementById("table-yearly");
+    if (!el) return;
+    if (!D.habits.length) {
+      el.innerHTML =
+        '<tbody><tr><td colspan="99" class="empty">No habits yet — add one above.</td></tr></tbody>';
+      return;
+    }
+    const now = new Date();
+    const curM = now.getFullYear() === y ? now.getMonth() : -1;
+
+    let o = `<thead><tr>
+      <th class="col-name th-title" style="text-align:left;padding:8px 10px">Habit</th>`;
+    for (let mo = 0; mo < 12; mo++) {
+      const isCur = mo === curM;
+      o += `<th class="${isCur ? "th-title" : "th-week"}" style="${mo % 2 === 1 && !isCur ? "background:#f5f5f4" : ""}">${MONTHS_S[mo]}</th>`;
+    }
+    o += `<th class="col-goal">Total</th><th class="col-prog" style="min-width:90px">% ${y}</th>
+    </tr></thead><tbody>`;
+
+    D.habits.forEach((hb) => {
+      const cat = hb.category || "other",
+        goal = hb.goal || 30;
+      let yearDone = 0;
+      o +=
+        `<tr><td class="col-name"><div class="col-name-inner">` +
+        `<div class="cat-dot cat-${cat}"></div>` +
+        `<span class="habit-name-text">${esc(hb.name)}</span></div></td>`;
+      for (let mo = 0; mo < 12; mo++) {
+        const cnt = countHabit(y, mo, hb.id),
+          p = pct(cnt, goal);
+        yearDone += cnt;
+        const isCur = mo === curM;
+        const bg =
+          p === 100
+            ? "background:#111;color:#fff"
+            : p >= 50
+              ? "background:#f0f0ee"
+              : isCur
+                ? "border:2px solid #111"
+                : "";
+        const tc = p === 100 ? "#fff" : "#aaa";
+        o += `<td class="col-goal" style="${bg}">${p}%<br><span style="font-size:0.58rem;color:${tc}">${cnt}</span></td>`;
+      }
+      const yearGoal = goal * 12,
+        yearP = pct(yearDone, yearGoal);
+      o +=
+        `<td class="col-goal" style="font-weight:700">${yearDone}/${yearGoal}</td>` +
+        `<td class="col-prog"><span class="prog-pct">${yearP}%</span>` +
+        `<div class="prog-bar"><div class="prog-fill" style="width:${yearP}%"></div></div></td></tr>`;
+    });
+
+    /* monthly summary row */
+    o += `<tr class="sum-row"><td class="sum-label">Overall %</td>`;
+    for (let mo = 0; mo < 12; mo++) {
+      const d2 = daysIn(y, mo);
+      let tot = 0;
+      for (let d = 1; d <= d2; d++) tot += countDay(y, mo, d);
+      const p = pct(tot, D.habits.length * d2);
+      o += `<td style="font-family:var(--mono);font-size:0.68rem;font-weight:700;text-align:center;padding:4px">${p}%</td>`;
+    }
+    o += `<td colspan="2"></td></tr></tbody>`;
+    el.innerHTML = o;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     STATS
+  ══════════════════════════════════════════════════════ */
   function renderStats() {
     const y = +document.getElementById("stats-year").value;
     const m = +document.getElementById("stats-month").value;
@@ -459,7 +635,6 @@ const App = (() => {
       if (D.habits.length && D.habits.every((h) => isOn(y, m, h.id, d)))
         perfect++;
 
-    // Consistency
     const streakSc = Math.min((streak / 7) * 100, 100);
     const perfectSc = pct(perfect, days);
     const consistency = Math.round(
@@ -479,13 +654,12 @@ const App = (() => {
                 : "F";
 
     document.getElementById("stat-cards").innerHTML =
-      sc(`${monthPct}%`, "إنجاز الشهر") +
-      sc(`${totChk}`, "مهام منجزة") +
+      sc(`${monthPct}%`, "Month Done") +
+      sc(`${totChk}`, "Tasks Done") +
       sc(`${streak}`, "Best Streak") +
-      sc(`${perfect}`, "أيام مثالية") +
-      sc(`${D.habits.length}`, "العادات");
+      sc(`${perfect}`, "Perfect Days") +
+      sc(`${D.habits.length}`, "Habits");
 
-    // Consistency ring
     const circ = 2 * Math.PI * 34,
       fill = circ * (1 - consistency / 100);
     document.getElementById("consistency-card").innerHTML = `
@@ -500,13 +674,13 @@ const App = (() => {
           <div class="score-num">${consistency}</div>
         </div>
         <div class="score-info">
-          <div class="score-title">نقاط الانتظام هذا الشهر</div>
-          <div class="score-desc">إنجاز (50%) + Streak (30%) + أيام مثالية (20%)</div>
+          <div class="score-title">This month's consistency</div>
+          <div class="score-desc">Completion (50%) + Streak (30%) + Perfect Days (20%)</div>
         </div>
         <div class="score-grade">${grade}</div>
       </div>`;
 
-    // Weekly bar
+    /* Weekly bar */
     killChart("weekly");
     const wL = [],
       wD = [];
@@ -551,14 +725,14 @@ const App = (() => {
       },
     });
 
-    // Daily line
+    /* Daily line */
     killChart("daily");
     const dL = [],
-      dD = [];
-    const tot = D.habits.length || 1;
+      dD = [],
+      tot2 = D.habits.length || 1;
     for (let d = 1; d <= days; d++) {
       dL.push(`${d}`);
-      dD.push(pct(countDay(y, m, d), tot));
+      dD.push(pct(countDay(y, m, d), tot2));
     }
     _charts["daily"] = new Chart(document.getElementById("chart-daily"), {
       type: "line",
@@ -592,7 +766,7 @@ const App = (() => {
       },
     });
 
-    // Habit bars
+    /* Habit bars */
     let hbHtml = "";
     D.habits.forEach((hb) => {
       const c = countHabit(y, m, hb.id),
@@ -602,7 +776,7 @@ const App = (() => {
       hbHtml += `<div class="hb-row">
         <div class="hb-top">
           <span class="hb-name" title="${esc(hb.name)}">${esc(hb.name)}</span>
-          <span class="hb-cat">${esc(CAT[hb.category] || "")}</span>
+          <span class="hb-cat">${esc(CAT(hb.category))}</span>
           <span class="hb-streak">${cStr}d streak</span>
           <span class="hb-meta">${c}/${g} (${p}%)</span>
         </div>
@@ -610,9 +784,9 @@ const App = (() => {
       </div>`;
     });
     document.getElementById("habit-bars").innerHTML =
-      hbHtml || '<div class="empty">لا توجد عادات</div>';
+      hbHtml || '<div class="empty">No habits yet.</div>';
 
-    // Radar
+    /* Radar */
     killChart("radar");
     const rEl = document.getElementById("chart-radar");
     if (D.habits.length >= 2) {
@@ -623,11 +797,9 @@ const App = (() => {
           datasets: [
             {
               label: `${MONTHS[m]} ${y}`,
-              data: D.habits.map((h) => {
-                const c = countHabit(y, m, h.id),
-                  g = h.goal || days;
-                return pct(c, g);
-              }),
+              data: D.habits.map((h) =>
+                pct(countHabit(y, m, h.id), h.goal || days),
+              ),
               borderColor: "#111",
               backgroundColor: "rgba(17,17,17,.08)",
               borderWidth: 1.5,
@@ -666,7 +838,7 @@ const App = (() => {
       });
     } else {
       rEl.parentElement.innerHTML =
-        '<div class="empty">أضف عادتين أو أكثر لعرض مخطط الرادار</div>';
+        '<div class="empty">Add 2 or more habits to see the radar chart.</div>';
     }
 
     _renderInsights(y, m, days);
@@ -677,10 +849,9 @@ const App = (() => {
     const insights = [];
     if (!D.habits.length) {
       document.getElementById("insights-container").innerHTML =
-        '<div class="empty">لا توجد بيانات</div>';
+        '<div class="empty">No data yet.</div>';
       return;
     }
-
     const dowTot = Array(7).fill(0),
       dowCnt = Array(7).fill(0);
     for (let d = 1; d <= days; d++) {
@@ -698,12 +869,12 @@ const App = (() => {
     if (dowAvg[bestDow] > 0)
       insights.push({
         icon: "zap",
-        text: `أفضل يوم لديك هذا الشهر هو <strong>${DAYS_FULL[bestDow]}</strong> — معدل إنجاز ${Math.round(dowAvg[bestDow])}%`,
+        text: `Your best day this month is <strong>${DAYS_F[bestDow]}</strong> — completion rate ${Math.round(dowAvg[bestDow])}%`,
       });
     if (worstDow !== bestDow && dowAvg[worstDow] < dowAvg[bestDow])
       insights.push({
         icon: "info",
-        text: `أضعف يوم هو <strong>${DAYS_FULL[worstDow]}</strong> — يحتاج دفعة إضافية`,
+        text: `Weakest day is <strong>${DAYS_F[worstDow]}</strong> — needs an extra push`,
       });
 
     const half = Math.floor(days / 2);
@@ -718,12 +889,12 @@ const App = (() => {
     if (h2 > h1)
       insights.push({
         icon: "award",
-        text: `أداؤك في <strong>تصاعد مستمر</strong> — النصف الثاني أفضل بـ ${h2 - h1}% من الأول`,
+        text: `Your performance is <strong>rising steadily</strong> — second half is better by ${h2 - h1}% than the first`,
       });
     else if (h1 > h2 + 5)
       insights.push({
         icon: "info",
-        text: `بدأت بقوة لكن <strong>الأداء تراجع</strong> — أنهِ الشهر بنفس حماسة البداية`,
+        text: `Strong start but <strong>performance dropped</strong> — finish the month strong`,
       });
 
     let bestH = null,
@@ -744,16 +915,18 @@ const App = (() => {
     if (bestH && bestP > 0)
       insights.push({
         icon: "award",
-        text: `أفضل عادة: <strong>${esc(bestH.name)}</strong> بإنجاز ${bestP}%`,
+        text: `Best habit: <strong>${esc(bestH.name)}</strong> at ${bestP}%`,
       });
     if (worstH && worstP < 100 && worstH.id !== bestH?.id)
       insights.push({
         icon: "info",
-        text: `تحتاج عناية: <strong>${esc(worstH.name)}</strong> — ${worstP}% فقط`,
+        text: `Needs attention: <strong>${esc(worstH.name)}</strong> — ${worstP}% only`,
       });
-
     if (!insights.length)
-      insights.push({ icon: "zap", text: "سجّل بياناتك وستظهر هنا رؤى مخصصة" });
+      insights.push({
+        icon: "zap",
+        text: "Log your data and personalized insights will appear here.",
+      });
 
     document.getElementById("insights-container").innerHTML = insights
       .map(
@@ -766,7 +939,7 @@ const App = (() => {
   function _renderStreakBoard(y, m, days) {
     if (!D.habits.length) {
       document.getElementById("streak-board").innerHTML =
-        '<div class="empty">لا توجد عادات</div>';
+        '<div class="empty">No habits yet.</div>';
       return;
     }
     let html = '<div class="streak-grid">';
@@ -790,7 +963,9 @@ const App = (() => {
     return `<div class="stat-box"><span class="num">${n}</span><span class="lbl">${l}</span></div>`;
   }
 
-  /* ── GOALS ──────────────────────────────────────────── */
+  /* ══════════════════════════════════════════════════════
+     GOALS
+  ══════════════════════════════════════════════════════ */
   function renderGoals() {
     _renderGoalsSummary();
     _renderGoalsLineChart();
@@ -798,14 +973,13 @@ const App = (() => {
     _renderGoalsList();
   }
 
-  /* Summary chips at the top */
   function _renderGoalsSummary() {
     const types = ["weekly", "monthly", "yearly"];
     let html = "";
     types.forEach((t) => {
       const list = D.goals.filter((g) => g.type === t);
-      const done = list.filter((g) => g.done).length;
-      const p = pct(done, list.length);
+      const done = list.filter((g) => g.done).length,
+        p = pct(done, list.length);
       html += `<div class="goal-chip">
         <div class="goal-chip-line" style="background:${G_CLR[t]}"></div>
         <div class="goal-chip-body">
@@ -818,22 +992,14 @@ const App = (() => {
     document.getElementById("goals-summary").innerHTML = html;
   }
 
-  /* ─────────────────────────────────────────────────────────
-     GOALS MULTI-LINE CHART
-     X-axis  = goal index 1…N (cumulative across all goals of that type)
-     Y-axis  = cumulative completion % at that point
-     One line per type: weekly (dark), monthly (grey), yearly (light)
-  ───────────────────────────────────────────────────────── */
   function _renderGoalsLineChart() {
     killChart("goals-line");
-
     const types = ["weekly", "monthly", "yearly"];
     const maxLen = Math.max(
       ...types.map((t) => D.goals.filter((g) => g.type === t).length),
       1,
     );
     const labels = Array.from({ length: maxLen }, (_, i) => `#${i + 1}`);
-
     const datasets = [];
     types.forEach((t) => {
       const list = D.goals.filter((g) => g.type === t);
@@ -843,7 +1009,6 @@ const App = (() => {
         if (g.done) done++;
         return Math.round((done / (i + 1)) * 100);
       });
-      // pad to maxLen with null
       while (data.length < maxLen) data.push(null);
       datasets.push({
         label: G_LBL[t],
@@ -861,17 +1026,14 @@ const App = (() => {
       });
     });
 
-    // Legend
     document.getElementById("goals-legend").innerHTML = [
       "weekly",
       "monthly",
       "yearly",
     ]
       .map(
-        (t) => `
-        <div class="gcl-item">
-          <div class="gcl-dot" style="background:${G_CLR[t]}"></div>${G_LBL[t]}
-        </div>`,
+        (t) =>
+          `<div class="gcl-item"><div class="gcl-dot" style="background:${G_CLR[t]}"></div>${G_LBL[t]}</div>`,
       )
       .join("");
 
@@ -879,13 +1041,11 @@ const App = (() => {
       const wrap = document.getElementById("chart-goals");
       if (wrap)
         wrap.parentElement.querySelector(".chart-wrap").innerHTML =
-          '<div class="empty">أضف أهدافاً لرؤية المخطط</div>';
+          '<div class="empty">Add goals to see the chart.</div>';
       return;
     }
-
     const canvas = document.getElementById("chart-goals");
     if (!canvas) return;
-
     _charts["goals-line"] = new Chart(canvas, {
       type: "line",
       data: { labels, datasets },
@@ -898,7 +1058,7 @@ const App = (() => {
           tooltip: {
             ...TIP,
             callbacks: {
-              title: (items) => `هدف ${items[0].label}`,
+              title: (items) => "Goal " + items[0].label,
               label: (item) => `${item.dataset.label}: ${item.parsed.y}%`,
             },
           },
@@ -909,7 +1069,7 @@ const App = (() => {
             ticks: TICK,
             title: {
               display: true,
-              text: "رقم الهدف",
+              text: "Goal #",
               color: "#aaa",
               font: { family: FONT, size: 9 },
             },
@@ -921,7 +1081,7 @@ const App = (() => {
             max: 100,
             title: {
               display: true,
-              text: "نسبة الإنجاز %",
+              text: "Completion %",
               color: "#aaa",
               font: { family: FONT, size: 9 },
             },
@@ -931,19 +1091,18 @@ const App = (() => {
     });
   }
 
-  /* Donut chart per type */
   function _renderGoalsDonuts() {
     ["weekly", "monthly", "yearly"].forEach((t) => {
       killChart(`donut-${t}`);
       const list = D.goals.filter((g) => g.type === t);
-      const done = list.filter((g) => g.done).length;
-      const rem = list.length - done;
+      const done = list.filter((g) => g.done).length,
+        rem = list.length - done;
       const lbl = document.getElementById(`dlbl-${t}`);
       if (!list.length) {
-        if (lbl) lbl.innerHTML = `<span>—</span><span>لا يوجد</span>`;
+        if (lbl) lbl.innerHTML = "<span>—</span><span>No goals</span>";
         return;
       }
-      if (lbl) lbl.innerHTML = `${done}<span>${list.length} هدف</span>`;
+      if (lbl) lbl.innerHTML = `${done}<span>${list.length} goals</span>`;
       _charts[`donut-${t}`] = new Chart(document.getElementById(`donut-${t}`), {
         type: "doughnut",
         data: {
@@ -967,9 +1126,9 @@ const App = (() => {
 
   function _renderGoalsList() {
     const types = [
-      { t: "yearly", lbl: "أهداف سنوية", b: "سنوي" },
-      { t: "monthly", lbl: "أهداف شهرية", b: "شهري" },
-      { t: "weekly", lbl: "أهداف أسبوعية", b: "أسبوعي" },
+      { t: "yearly", lbl: "Yearly Goals", b: "Yearly" },
+      { t: "monthly", lbl: "Monthly Goals", b: "Monthly" },
+      { t: "weekly", lbl: "Weekly Goals", b: "Weekly" },
     ];
     let html = "",
       any = false;
@@ -992,8 +1151,7 @@ const App = (() => {
       });
     });
     if (!any)
-      html =
-        '<div class="empty">لم تضف أي أهداف بعد — استخدم الأزرار أعلاه</div>';
+      html = '<div class="empty">No goals yet — use the buttons above.</div>';
     document.getElementById("goals-container").innerHTML = html;
   }
 
@@ -1003,19 +1161,22 @@ const App = (() => {
       g.done = v;
       save();
       renderGoals();
-      toast(v ? "✓ هدف مكتمل" : "○ ألغيت");
+      toast(v ? "✓ Goal done" : "○ Undone");
     }
   }
   function deleteGoal(id) {
     D.goals = D.goals.filter((x) => x.id !== id);
     save();
     renderGoals();
-    toast("حُذف الهدف");
+    toast("Goal deleted");
   }
   function openAddGoal(type) {
-    const L = { weekly: "أسبوعي", monthly: "شهري", yearly: "سنوي" };
-    document.getElementById("goal-modal-title").textContent =
-      "هدف " + L[type] + " جديد";
+    const L = {
+      weekly: "New Weekly Goal",
+      monthly: "New Monthly Goal",
+      yearly: "New Yearly Goal",
+    };
+    document.getElementById("goal-modal-title").textContent = L[type];
     document.getElementById("goal-type").value = type;
     document.getElementById("goal-text").value = "";
     document.getElementById("goal-deadline").value = "";
@@ -1030,10 +1191,12 @@ const App = (() => {
     save();
     closeModal("m-add-goal");
     renderGoals();
-    toast("تمت إضافة الهدف");
+    toast("Goal added");
   }
 
-  /* ── HEATMAP ────────────────────────────────────────── */
+  /* ══════════════════════════════════════════════════════
+     HEATMAP
+  ══════════════════════════════════════════════════════ */
   function renderHeatmap() {
     const y = +document.getElementById("hm-year").value;
     const hid = document.getElementById("hm-habit").value;
@@ -1041,7 +1204,7 @@ const App = (() => {
     for (let mo = 0; mo < 12; mo++) {
       const days = daysIn(y, mo),
         fd = new Date(y, mo, 1).getDay();
-      html += `<div><div class="hm-month-title">${MONTHS_EN[mo]}</div><div class="hm-grid">`;
+      html += `<div><div class="hm-month-title">${MONTHS_S[mo]}</div><div class="hm-grid">`;
       for (let p = 0; p < fd; p++)
         html += '<div class="hm-cell" style="background:transparent"></div>';
       for (let d = 1; d <= days; d++) {
@@ -1065,14 +1228,16 @@ const App = (() => {
                 : i < 0.75
                   ? "#444"
                   : "#111";
-        html += `<div class="hm-cell" style="background:${bg}" title="${MONTHS_EN[mo]} ${d}: ${cnt}/${mx}"></div>`;
+        html += `<div class="hm-cell" style="background:${bg}" title="${MONTHS_S[mo]} ${d}: ${cnt}/${mx}"></div>`;
       }
       html += "</div></div>";
     }
     document.getElementById("heatmap-grid").innerHTML = html + "</div>";
   }
 
-  /* ── FOCUS MODE ─────────────────────────────────────── */
+  /* ══════════════════════════════════════════════════════
+     FOCUS MODE
+  ══════════════════════════════════════════════════════ */
   function renderFocus() {
     const y = _focusDate.getFullYear(),
       m = _focusDate.getMonth(),
@@ -1084,19 +1249,17 @@ const App = (() => {
     })();
 
     document.getElementById("focus-date-main").textContent =
-      `${DAYS_FULL[dow]}، ${d} ${MONTHS[m]} ${y}`;
+      `${DAYS_F[dow]}, ${d} ${MONTHS[m]} ${y}`;
     document.getElementById("focus-date-sub").textContent = isToday
-      ? "اليوم"
+      ? "Today"
       : "";
 
-    // Ring
-    const done = D.habits.filter((h) => isOn(y, m, h.id, d)).length;
-    const total = D.habits.length || 1;
-    const p = pct(done, total);
-    const circ = 2 * Math.PI * 44,
+    const done = D.habits.filter((h) => isOn(y, m, h.id, d)).length,
+      total = D.habits.length || 1;
+    const p = pct(done, total),
+      circ = 2 * Math.PI * 44,
       fill = circ * (1 - p / 100);
 
-    // Per-habit mini bars for ring card
     let miniRows = "";
     D.habits.forEach((hb) => {
       const on = isOn(y, m, hb.id, d);
@@ -1106,6 +1269,12 @@ const App = (() => {
       </div>`;
     });
 
+    const ringTitle =
+      p === 100
+        ? "Perfect Day ✓"
+        : p >= 75
+          ? "Great Performance"
+          : "Today's Progress";
     document.getElementById("focus-ring-wrap").innerHTML = `
       <div class="focus-ring-card">
         <div class="focus-ring-svg-wrap">
@@ -1120,38 +1289,34 @@ const App = (() => {
           </div>
         </div>
         <div class="focus-ring-info">
-          <div class="focus-ring-title">${p === 100 ? "يوم مثالي ✓" : p >= 75 ? "أداء ممتاز" : "تقدم اليوم"}</div>
+          <div class="focus-ring-title">${ringTitle}</div>
           <div class="focus-ring-prog-wrap">${miniRows}</div>
         </div>
       </div>`;
 
-    // Motivational banner
     const q = QUOTES[d % QUOTES.length];
     document.getElementById("focus-banner").innerHTML =
       `<span style="opacity:.5;margin-left:6px">"</span>${q}<span style="opacity:.5;margin-right:6px">"</span>`;
 
-    // Habit cards
     let hCards = '<div class="focus-habits-grid">';
     D.habits.forEach((hb) => {
-      const on = isOn(y, m, hb.id, d);
-      const str = streakAt(hb.id, y, m, d);
+      const on = isOn(y, m, hb.id, d),
+        str = streakAt(hb.id, y, m, d);
       hCards += `<div class="focus-habit-card${on ? " done" : ""}" onclick="App.focusToggle(${y},${m},${hb.id},${d})">
         <div class="fhc-check">${on ? "✓" : ""}</div>
         <div class="fhc-info">
           <div class="fhc-name">${esc(hb.name)}</div>
-          <div class="fhc-cat">${esc(CAT[hb.category] || "")}</div>
+          <div class="fhc-cat">${esc(CAT(hb.category))}</div>
           ${str > 1 ? `<div class="fhc-streak">${str}d streak</div>` : ""}
         </div>
       </div>`;
     });
     document.getElementById("focus-habits").innerHTML = hCards + "</div>";
 
-    // Day note
     const noteKey = `${y}-${m}-${d}`;
     const ne = document.getElementById("focus-note");
     if (ne) ne.value = D.dayNotes[noteKey] || "";
 
-    // 7-day timeline
     let tlHtml = '<div class="focus-tl">';
     for (let i = 6; i >= 0; i--) {
       const dt = new Date(_focusDate);
@@ -1161,13 +1326,13 @@ const App = (() => {
         dd2 = dt.getDate();
       const c = countDay(dy, dm, dd2),
         t = D.habits.length || 1;
-      const barH = Math.max(2, Math.round((c / t) * 48));
-      const isT = i === 0;
+      const barH = Math.max(2, Math.round((c / t) * 48)),
+        isT = i === 0;
       tlHtml += `<div class="focus-tl-day${isT ? " today" : ""}">
         <div class="focus-tl-bar-wrap">
           <div class="focus-tl-bar" style="height:${barH}px;background:${isT ? "#111" : "#bbb"}"></div>
         </div>
-        <div class="focus-tl-date">${DAYS_AR[dt.getDay()]}<br>${dd2}</div>
+        <div class="focus-tl-date">${DAYS_S[dt.getDay()]}<br>${dd2}</div>
       </div>`;
     }
     document.getElementById("focus-timeline").innerHTML = tlHtml + "</div>";
@@ -1182,7 +1347,7 @@ const App = (() => {
     _liveRow(y, m, hid);
     _liveDay(y, m, d);
     _liveWeek(y, m, weekOf(d));
-    toast(D.checks[k] ? "✓ مكتمل" : "○ ألغيت");
+    toast(D.checks[k] ? "✓ Done" : "○ Undone");
   }
   function focusChangeDay(delta) {
     _focusDate = new Date(_focusDate);
@@ -1205,7 +1370,9 @@ const App = (() => {
     save();
   }
 
-  /* ── EXPORT CSV ─────────────────────────────────────── */
+  /* ══════════════════════════════════════════════════════
+     CSV EXPORT
+  ══════════════════════════════════════════════════════ */
   function exportCSV() {
     const y = +document.getElementById("sel-year").value;
     const m = +document.getElementById("sel-month").value;
@@ -1230,13 +1397,15 @@ const App = (() => {
     a.download = `habits_${y}_${String(m + 1).padStart(2, "0")}.csv`;
     a.click();
     URL.revokeObjectURL(a.href);
-    toast("تم تصدير CSV");
+    toast("CSV exported");
   }
 
-  /* ── HABITS CRUD ────────────────────────────────────── */
+  /* ══════════════════════════════════════════════════════
+     HABITS CRUD
+  ══════════════════════════════════════════════════════ */
   function openAddHabitModal() {
-    document.getElementById("habit-modal-title").textContent = "عادة جديدة";
-    document.getElementById("habit-submit-btn").textContent = "إضافة";
+    document.getElementById("habit-modal-title").textContent = "New Habit";
+    document.getElementById("habit-submit-btn").textContent = "Add";
     ["in-name", "in-reminder", "in-note"].forEach(
       (id) => (document.getElementById(id).value = ""),
     );
@@ -1264,20 +1433,20 @@ const App = (() => {
     closeModal("m-add-habit");
     fillHmHabit();
     renderTracker();
-    toast("تمت إضافة العادة");
+    toast("Habit added");
   }
   function openManage() {
     _buildManageList();
     _openModal("m-manage");
   }
   function _buildManageList() {
-    let html = D.habits.length ? "" : '<div class="empty">لا توجد عادات</div>';
+    let html = D.habits.length ? "" : '<div class="empty">No habits yet.</div>';
     D.habits.forEach((hb) => {
       html += `<div class="manage-row">
         <div class="manage-dot cat-${hb.category || "other"}"></div>
         <div class="manage-info">
           <div class="manage-name">${esc(hb.name)}</div>
-          <div class="manage-meta">${esc(CAT[hb.category] || "")} · ${esc(FREQ[hb.freq] || "")} · ${hb.goal} يوم/شهر${hb.reminder ? " · " + esc(hb.reminder) : ""}</div>
+          <div class="manage-meta">${esc(CAT(hb.category))} · ${esc(FREQ(hb.freq))} · ${hb.goal} d/mo${hb.reminder ? " · " + esc(hb.reminder) : ""}</div>
         </div>
         <div class="manage-actions">
           <button class="btn btn-sm" onclick="App.openEditHabit(${hb.id})">${use("edit", 13)}</button>
@@ -1320,10 +1489,10 @@ const App = (() => {
     fillHmHabit();
     renderTracker();
     openManage();
-    toast("تم حفظ التعديلات");
+    toast("Changes saved");
   }
   function deleteHabit(id) {
-    if (!confirm("Delete this Habit and it's Data ")) return;
+    if (!confirm("Delete this habit and all its data?")) return;
     D.habits = D.habits.filter((h) => h.id !== id);
     Object.keys(D.checks).forEach((k) => {
       if (k.split("-")[2] === String(id)) delete D.checks[k];
@@ -1332,7 +1501,7 @@ const App = (() => {
     _buildManageList();
     fillHmHabit();
     renderTracker();
-    toast("تم الحذف");
+    toast("Habit deleted");
   }
 
   /* ── TABS & MODALS ──────────────────────────────────── */
@@ -1379,6 +1548,7 @@ const App = (() => {
     renderStats,
     renderGoals,
     renderHeatmap,
+    renderFocus,
     openModal: (id) => {
       if (id === "m-add-habit") openAddHabitModal();
       else _openModal(id);
@@ -1400,6 +1570,8 @@ const App = (() => {
     toggleGoal,
     deleteGoal,
     exportCSV,
+    renderWeeklyTable,
+    renderMonthlyTable,
+    renderYearlyTable,
   };
 })();
-4;

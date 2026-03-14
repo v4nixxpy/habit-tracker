@@ -2149,279 +2149,368 @@ td {
 }
 
 /* ══════════════════════════════════════════════════
-   MOBILE TRACKER CARD STYLES  (mob_tracker.js)
-   #mob-tracker-wrap is injected by JS on mobile only
+   LANGUAGE SELECTOR — add to end of main.css
 ══════════════════════════════════════════════════ */
 
-#mob-tracker-wrap {
-  display: none;
+.lang-wrap {
+  position: relative;
+  flex-shrink: 0;
+  margin-left: 6px;
 }
 
-/* ── Banner ── */
-.mt-banner {
+.lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: 1px solid #2a2a2a;
+  color: #aaa;
+  padding: 5px 9px;
+  border-radius: var(--r);
+  cursor: pointer;
+  font-size: 0.82rem;
+  transition: all 0.15s;
+  white-space: nowrap;
+  line-height: 1;
+}
+.lang-btn:hover {
+  border-color: #666;
+  color: #fff;
+}
+.lang-btn svg {
+  stroke: currentColor;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.lang-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: var(--r);
+  overflow: hidden;
+  z-index: 300;
+  min-width: 160px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.lang-dropdown.open {
+  display: block;
+}
+
+.lang-opt {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: var(--ink);
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: #aaa;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-family: var(--sans);
+  font-size: 0.8rem;
+  text-align: left;
+  transition:
+    background 0.12s,
+    color 0.12s;
+  white-space: nowrap;
+}
+.lang-opt:hover {
+  background: #2a2a2a;
   color: #fff;
-  border-radius: 8px;
-  padding: 16px 18px;
-  margin-bottom: 12px;
 }
-.mt-banner-month {
-  font-family: var(--mono);
-  font-size: 1rem;
+.lang-opt.active {
+  color: #fff;
   font-weight: 700;
-  letter-spacing: 1px;
-  line-height: 1.2;
+  background: #222;
 }
-.mt-banner-sub {
-  font-size: 0.62rem;
-  color: rgba(255, 255, 255, 0.4);
+
+/* RTL: flip dropdown to right side */
+[dir="rtl"] .lang-dropdown {
+  left: auto;
+  right: 0;
+}
+[dir="rtl"] .lang-opt {
+  text-align: right;
+}
+
+/* Mobile */
+@media (max-width: 639px) {
+  .lang-btn {
+    padding: 4px 7px;
+    font-size: 0.75rem;
+  }
+  .lang-dropdown {
+    min-width: 140px;
+  }
+}
+@media (max-width: 479px) {
+  .lang-wrap {
+    margin-left: 2px;
+  }
+  .lang-btn {
+    padding: 3px 6px;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   TRACKER — Desktop weekly/monthly/yearly section titles
+══════════════════════════════════════════════════ */
+.tracker-section {
+  margin-top: 28px;
+}
+.tracker-section-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   font-family: var(--mono);
-  margin-top: 3px;
-  letter-spacing: 2px;
+  font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--ink);
+  padding: 0 0 8px 0;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 10px;
 }
-.mt-banner-ring {
-  position: relative;
-  width: 52px;
-  height: 52px;
+.tracker-section-title svg {
+  stroke: var(--ink);
   flex-shrink: 0;
 }
-.mt-ring-pct {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  font-weight: 700;
-  color: #fff;
-  pointer-events: none;
+
+@media (max-width: 767px) {
+  .tracker-section {
+    display: none;
+  }
 }
 
-/* ── Week pills ── */
-.mt-weeks {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
-  margin-bottom: 14px;
+/* ══════════════════════════════════════════════════
+   MOBILE — Section headers (Daily / Weekly / Monthly / Yearly)
+══════════════════════════════════════════════════ */
+.mt-section {
+  margin-bottom: 20px;
 }
-.mt-week-pill {
-  background: var(--paper);
-  border: 1px solid var(--faint);
-  border-radius: 6px;
-  padding: 8px 6px 7px;
-  text-align: center;
-}
-.mt-wp-label {
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  color: var(--muted);
-  text-transform: uppercase;
-  margin-bottom: 5px;
-}
-.mt-wp-bar {
-  height: 3px;
-  background: var(--faint);
-  border-radius: 2px;
-  overflow: hidden;
-  margin: 0 2px 5px;
-}
-.mt-wp-fill {
-  height: 100%;
-  background: var(--ink);
-  border-radius: 2px;
-  transition: width 0.4s;
-}
-.mt-wp-pct {
+.mt-section-header {
   font-family: var(--mono);
   font-size: 0.68rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
   color: var(--ink);
+  padding: 10px 0 7px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 10px;
 }
 
-/* ── Habit card ── */
-.mt-card {
+/* ══════════════════════════════════════════════════
+   MOBILE — Period card (one habit per card)
+══════════════════════════════════════════════════ */
+.mt-period-card {
   background: var(--paper);
   border: 1px solid var(--faint);
   border-radius: 8px;
-  overflow: hidden;
   margin-bottom: 10px;
+  overflow: hidden;
 }
-.mt-card-head {
+.mt-period-head {
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 13px 14px 9px;
+  gap: 8px;
+  padding: 10px 12px 5px;
 }
-.mt-card-dot {
-  width: 8px;
-  height: 8px;
+.mt-period-dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
+  display: inline-block;
 }
-.mt-card-name {
+.mt-period-name {
   flex: 1;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 700;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.mt-card-badges {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  flex-shrink: 0;
-}
-.mt-badge-cat {
+.mt-period-pct {
   font-family: var(--mono);
-  font-size: 0.58rem;
-  color: var(--muted);
-  background: var(--bg);
-  border: 1px solid var(--faint);
-  border-radius: 3px;
-  padding: 1px 5px;
-}
-.mt-badge-streak {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  color: var(--mid);
-}
-.mt-badge-pct {
-  font-family: var(--mono);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  color: var(--ink);
   background: var(--bg);
   border: 1px solid var(--faint);
   border-radius: 3px;
   padding: 1px 6px;
+  flex-shrink: 0;
 }
-.mt-prog-track {
-  height: 3px;
-  background: var(--faint);
-  margin: 0 14px 4px;
-  border-radius: 2px;
+
+/* Mini bar chart */
+.mt-period-chart {
+  padding: 2px 12px 6px;
+  height: 48px;
   overflow: hidden;
 }
-.mt-prog-fill {
-  height: 100%;
-  background: var(--ink);
-  border-radius: 2px;
-  transition: width 0.3s;
-}
-.mt-prog-label {
-  font-family: var(--mono);
-  font-size: 0.6rem;
-  color: var(--muted);
-  padding: 0 14px 10px;
-}
-
-/* ── Days grid ── */
-.mt-days-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  padding: 4px 14px 14px;
-}
-
-/* ── Day button ──
-   NUMBER shown via CSS attr(data-d) — NO HTML children needed.
-   This is the fix for the black-dot / checkmark bug:
-   having <span> children inside .on conflicted with ::after.
-   Now the button is always empty — pure CSS controls display.
-*/
-.mt-day {
-  all: unset;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 1 / 1;
-  border-radius: 50%;
-  border: 1.5px solid var(--faint);
-  background: var(--bg);
-  cursor: pointer;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  transition:
-    background 0.12s,
-    border-color 0.12s,
-    transform 0.08s;
-  position: relative;
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  color: var(--muted);
-  /* show day number from data-d attribute */
-  /* (set via ::before so ::after is free for checkmark) */
-}
-.mt-day::before {
-  content: attr(data-d);
-  font-family: var(--mono);
-  font-size: 0.58rem;
-  color: var(--muted);
-  pointer-events: none;
-  line-height: 1;
-}
-.mt-day:active {
-  transform: scale(0.82);
-}
-
-/* today ring */
-.mt-day.today {
-  border-color: var(--ink);
-  border-width: 2px;
-}
-.mt-day.today::before {
-  color: var(--ink);
-  font-weight: 700;
-}
-
-/* checked state */
-.mt-day.on {
-  background: var(--ink);
-  border-color: var(--ink);
-}
-.mt-day.on::before {
-  display: none; /* hide number */
-}
-.mt-day.on::after {
-  content: ¹3; /* ✓ checkmark */
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #fff;
-  pointer-events: none;
-  line-height: 1;
-}
-
-/* today + checked */
-.mt-day.today.on {
-  border-color: var(--ink);
-}
-
-/* Empty state */
-.mt-empty {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--muted);
-  font-size: 0.88rem;
-  line-height: 1.8;
-  background: var(--paper);
-  border: 1px dashed var(--faint);
-  border-radius: 8px;
-}
-.mt-empty span {
-  font-size: 0.72rem;
-  color: #bbb;
+.mt-period-chart svg {
   display: block;
 }
 
-/* ── Show mob-tracker-wrap on mobile ── */
-@media (max-width: 767px) {
-  #mob-tracker-wrap {
-    display: block !important;
+/* ── Week/Month cells row ── */
+.mt-period-cells {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  padding: 2px 12px 12px;
+}
+.mt-period-cell {
+  border-radius: 5px;
+  padding: 5px 2px 4px;
+  text-align: center;
+  border: 1px solid var(--faint);
+  background: var(--bg);
+}
+.mt-period-cell.perfect {
+  background: #111;
+  border-color: #111;
+}
+.mt-period-cell.good {
+  background: #efefed;
+  border-color: #d0d0ce;
+}
+.mt-period-cell.partial {
+  background: #fafafa;
+}
+.mt-period-cell.empty {
+  opacity: 0.5;
+}
+.mt-period-cell.current {
+  border-color: #111;
+  border-width: 2px;
+}
+.mt-period-cell.perfect .mt-pc-label,
+.mt-period-cell.perfect .mt-pc-val {
+  color: #fff !important;
+}
+.mt-period-cell.perfect .mt-pc-bar {
+  background: rgba(255, 255, 255, 0.2);
+}
+.mt-period-cell.perfect .mt-pc-fill {
+  background: #fff;
+}
+
+.mt-pc-label {
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.mt-pc-val {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 3px;
+}
+.mt-pc-bar {
+  height: 2px;
+  background: var(--faint);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.mt-pc-fill {
+  height: 100%;
+  background: var(--ink);
+  border-radius: 1px;
+}
+
+/* ── Yearly 12-month grid ── */
+.mt-year-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  padding: 2px 12px 12px;
+}
+.mt-year-cell {
+  border-radius: 5px;
+  padding: 5px 2px 4px;
+  text-align: center;
+  border: 1px solid var(--faint);
+  background: var(--bg);
+}
+.mt-year-cell.perfect {
+  background: #111;
+  border-color: #111;
+}
+.mt-year-cell.good {
+  background: #efefed;
+  border-color: #d0d0ce;
+}
+.mt-year-cell.partial {
+  background: #fafafa;
+}
+.mt-year-cell.empty {
+  opacity: 0.45;
+}
+.mt-year-cell.current {
+  border-color: #111;
+  border-width: 2px;
+}
+.mt-year-cell.perfect .mt-yc-label,
+.mt-year-cell.perfect .mt-yc-val {
+  color: #fff !important;
+}
+
+.mt-yc-label {
+  font-family: var(--mono);
+  font-size: 0.52rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.mt-yc-val {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ── Category dot colors ── */
+.mt-period-dot.cat-health,
+.mt-card-dot.cat-health {
+  background: #4a9b7f;
+}
+.mt-period-dot.cat-learning,
+.mt-card-dot.cat-learning {
+  background: #5b7fa6;
+}
+.mt-period-dot.cat-fitness,
+.mt-card-dot.cat-fitness {
+  background: #c0392b;
+}
+.mt-period-dot.cat-mindfulness,
+.mt-card-dot.cat-mindfulness {
+  background: #8e44ad;
+}
+.mt-period-dot.cat-productivity,
+.mt-card-dot.cat-productivity {
+  background: #d68910;
+}
+.mt-period-dot.cat-other,
+.mt-card-dot.cat-other {
+  background: #888;
+}
+
+/* Very small phones: 4 cols for week cells */
+@media (max-width: 360px) {
+  .mt-period-cells {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .mt-year-grid {
+    grid-template-columns: repeat(4, 1fr);
   }
 }

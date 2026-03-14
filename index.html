@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -219,16 +219,43 @@
           <select id="sel-year" onchange="App.renderTracker()"></select>
           <select id="sel-month" onchange="App.renderTracker()"></select>
           <button class="btn btn-dark" onclick="App.openAddHabitModal()">
-            <svg width="13" height="13"><use href="#ic-plus" /></svg>عادة جديدة
+            <svg width="13" height="13"><use href="#ic-plus" /></svg>New Habit
           </button>
           <button class="btn" onclick="App.openManage()">
-            <svg width="13" height="13"><use href="#ic-sliders" /></svg>إدارة
+            <svg width="13" height="13"><use href="#ic-sliders" /></svg>Manage
           </button>
           <button class="btn" onclick="App.exportCSV()">
             <svg width="13" height="13"><use href="#ic-download" /></svg>CSV
           </button>
         </div>
         <div class="table-scroll"><table id="main-table"></table></div>
+
+        <!-- ── Weekly Tracking ── -->
+        <div class="tracker-section" id="section-weekly">
+          <div class="tracker-section-title">
+            <svg width="13" height="13"><use href="#ic-bar" /></svg>
+            <span>Weekly Tracking</span>
+          </div>
+          <div class="table-scroll"><table id="table-weekly"></table></div>
+        </div>
+
+        <!-- ── Monthly Tracking ── -->
+        <div class="tracker-section" id="section-monthly">
+          <div class="tracker-section-title">
+            <svg width="13" height="13"><use href="#ic-activity" /></svg>
+            <span>Monthly Tracking</span>
+          </div>
+          <div class="table-scroll"><table id="table-monthly"></table></div>
+        </div>
+
+        <!-- ── Yearly Tracking ── -->
+        <div class="tracker-section" id="section-yearly">
+          <div class="tracker-section-title">
+            <svg width="13" height="13"><use href="#ic-target" /></svg>
+            <span>Yearly Tracking</span>
+          </div>
+          <div class="table-scroll"><table id="table-yearly"></table></div>
+        </div>
       </div>
 
       <!-- STATS -->
@@ -258,7 +285,7 @@
             Habits Radar
             <span
               class="info-tip"
-              title="كل ضلع = عادة. كلما اتسع الشكل = أداء أفضل"
+              title="Each axis = one habit. Wider shape = better performance"
               ><svg width="14" height="14"><use href="#ic-info" /></svg
             ></span>
           </div>
@@ -286,13 +313,13 @@
       <div id="view-goals" class="view">
         <div class="controls">
           <button class="btn btn-dark" onclick="App.openAddGoal('weekly')">
-            <svg width="13" height="13"><use href="#ic-plus" /></svg>أسبوعي
+            <svg width="13" height="13"><use href="#ic-plus" /></svg>Weekly
           </button>
           <button class="btn btn-dark" onclick="App.openAddGoal('monthly')">
-            <svg width="13" height="13"><use href="#ic-plus" /></svg>شهري
+            <svg width="13" height="13"><use href="#ic-plus" /></svg>Monthly
           </button>
           <button class="btn btn-dark" onclick="App.openAddGoal('yearly')">
-            <svg width="13" height="13"><use href="#ic-plus" /></svg>سنوي
+            <svg width="13" height="13"><use href="#ic-plus" /></svg>Yearly
           </button>
         </div>
 
@@ -302,10 +329,10 @@
         <!-- Multi-line progress chart -->
         <div class="card">
           <div class="card-title">
-            تقدم الأهداف التراكمي
+            Cumulative Goal Progress
             <span
               class="info-tip"
-              title="كل خط = نوع هدف. المحور الأفقي = رقم الهدف بالتسلسل. المحور الرأسي = نسبة الأهداف المكتملة حتى الآن من ذلك النوع"
+              title="Each axis = one habit. Wider shape = better performance"
               ><svg width="14" height="14"><use href="#ic-info" /></svg
             ></span>
           </div>
@@ -318,21 +345,23 @@
         <!-- 3 donut charts -->
         <div class="goals-donuts-row">
           <div class="card goals-donut-card">
-            <div class="card-title" style="justify-content: center">أسبوعي</div>
+            <div class="card-title" style="justify-content: center">Weekly</div>
             <div class="donut-wrap">
               <canvas id="donut-weekly"></canvas>
               <div class="donut-label" id="dlbl-weekly"></div>
             </div>
           </div>
           <div class="card goals-donut-card">
-            <div class="card-title" style="justify-content: center">شهري</div>
+            <div class="card-title" style="justify-content: center">
+              Monthly
+            </div>
             <div class="donut-wrap">
               <canvas id="donut-monthly"></canvas>
               <div class="donut-label" id="dlbl-monthly"></div>
             </div>
           </div>
           <div class="card goals-donut-card">
-            <div class="card-title" style="justify-content: center">سنوي</div>
+            <div class="card-title" style="justify-content: center">Yearly</div>
             <div class="donut-wrap">
               <canvas id="donut-yearly"></canvas>
               <div class="donut-label" id="dlbl-yearly"></div>
@@ -374,15 +403,11 @@
             <div id="focus-date-sub"></div>
           </div>
           <div id="focus-nav">
-            <button class="btn" onclick="App.focusChangeDay(-1)">
-              ← السابق
-            </button>
+            <button class="btn" onclick="App.focusChangeDay(-1)">← Prev</button>
             <button class="btn btn-dark" onclick="App.focusToday()">
-              اليوم
+              Today
             </button>
-            <button class="btn" onclick="App.focusChangeDay(1)">
-              التالي →
-            </button>
+            <button class="btn" onclick="App.focusChangeDay(1)">Next →</button>
           </div>
         </div>
         <div id="focus-ring-wrap"></div>
@@ -390,18 +415,18 @@
         <div id="focus-habits"></div>
         <div class="card" style="margin-top: 14px">
           <div class="card-title">
-            <svg width="13" height="13"><use href="#ic-info" /></svg> ملاحظة
-            اليوم
+            <svg width="13" height="13"><use href="#ic-info" /></svg>
+            Day Note
           </div>
           <textarea
             id="focus-note"
-            placeholder="سجّل ملاحظتك لهذا اليوم..."
+            placeholder="Write your note for today..."
             rows="3"
             oninput="App.saveDayNote(this.value)"
           ></textarea>
         </div>
         <div class="card" style="margin-top: 12px">
-          <div class="card-title">آخر 7 أيام</div>
+          <div class="card-title">Last 7 Days</div>
           <div id="focus-timeline"></div>
         </div>
       </div>
@@ -413,71 +438,71 @@
     <div class="overlay" id="m-add-habit">
       <div class="modal" style="width: 440px">
         <div class="modal-header">
-          <h3 id="habit-modal-title">عادة جديدة</h3>
+          <h3 id="habit-modal-title">New Habit</h3>
           <button class="icon-btn" onclick="App.closeModal('m-add-habit')">
             <svg width="16" height="16"><use href="#ic-x" /></svg>
           </button>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>اسم العادة *</label
+            <label>Habit Name *</label
             ><input
               type="text"
               id="in-name"
-              placeholder="مثال: قراءة 30 دقيقة"
+              placeholder="e.g. Read 30 minutes"
             />
           </div>
         </div>
         <div class="form-row two-col">
           <div class="form-group">
-            <label>الفئة</label
+            <label>Category</label
             ><select id="in-category">
-              <option value="health">الصحة</option>
-              <option value="learning">التعلم</option>
-              <option value="fitness">اللياقة</option>
-              <option value="mindfulness">التأمل</option>
-              <option value="productivity">الإنتاجية</option>
-              <option value="other">أخرى</option>
+              <option value="health">Health</option>
+              <option value="learning">Learning</option>
+              <option value="fitness">Fitness</option>
+              <option value="mindfulness">Mindfulness</option>
+              <option value="productivity">Productivity</option>
+              <option value="other">Other</option>
             </select>
           </div>
           <div class="form-group">
-            <label>الهدف (أيام/شهر)</label
+            <label>Goal (days/month)</label
             ><input type="number" id="in-goal" value="30" min="1" max="31" />
           </div>
         </div>
         <div class="form-row two-col">
           <div class="form-group">
-            <label>التكرار</label
+            <label>Frequency</label
             ><select id="in-freq">
-              <option value="daily">يومي</option>
-              <option value="weekdays">أيام العمل</option>
-              <option value="custom">مخصص</option>
+              <option value="daily">Daily</option>
+              <option value="weekdays">Weekdays</option>
+              <option value="custom">Custom</option>
             </select>
           </div>
           <div class="form-group">
-            <label>وقت التذكير</label
+            <label>Reminder Time</label
             ><input type="text" id="in-reminder" placeholder="08:00" />
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>ملاحظة</label
+            <label>Note</label
             ><textarea
               id="in-note"
               rows="2"
-              placeholder="معلومات إضافية..."
+              placeholder="Additional info..."
             ></textarea>
           </div>
         </div>
         <div class="modal-actions">
           <button class="btn" onclick="App.closeModal('m-add-habit')">
-            إلغاء</button
+            Cancel</button
           ><button
             class="btn btn-dark"
             id="habit-submit-btn"
             onclick="App.submitHabit()"
           >
-            إضافة
+            Add
           </button>
         </div>
       </div>
@@ -487,7 +512,7 @@
     <div class="overlay" id="m-manage">
       <div class="modal" style="width: 480px">
         <div class="modal-header">
-          <h3>إدارة العادات</h3>
+          <h3>Manage Habits</h3>
           <button class="icon-btn" onclick="App.closeModal('m-manage')">
             <svg width="16" height="16"><use href="#ic-x" /></svg>
           </button>
@@ -495,7 +520,7 @@
         <div id="manage-list" style="max-height: 420px; overflow-y: auto"></div>
         <div class="modal-actions" style="margin-top: 14px">
           <button class="btn btn-dark" onclick="App.closeModal('m-manage')">
-            إغلاق
+            Close
           </button>
         </div>
       </div>
@@ -505,7 +530,7 @@
     <div class="overlay" id="m-edit-habit">
       <div class="modal" style="width: 440px">
         <div class="modal-header">
-          <h3>تعديل العادة</h3>
+          <h3>Edit Habit</h3>
           <button class="icon-btn" onclick="App.closeModal('m-edit-habit')">
             <svg width="16" height="16"><use href="#ic-x" /></svg>
           </button>
@@ -513,49 +538,49 @@
         <input type="hidden" id="edit-habit-id" />
         <div class="form-row">
           <div class="form-group">
-            <label>الاسم *</label><input type="text" id="edit-name" />
+            <label>Name *</label><input type="text" id="edit-name" />
           </div>
         </div>
         <div class="form-row two-col">
           <div class="form-group">
-            <label>الفئة</label
+            <label>Category</label
             ><select id="edit-category">
-              <option value="health">الصحة</option>
-              <option value="learning">التعلم</option>
-              <option value="fitness">اللياقة</option>
-              <option value="mindfulness">التأمل</option>
-              <option value="productivity">الإنتاجية</option>
-              <option value="other">أخرى</option>
+              <option value="health">Health</option>
+              <option value="learning">Learning</option>
+              <option value="fitness">Fitness</option>
+              <option value="mindfulness">Mindfulness</option>
+              <option value="productivity">Productivity</option>
+              <option value="other">Other</option>
             </select>
           </div>
           <div class="form-group">
-            <label>الهدف</label
+            <label>Goal</label
             ><input type="number" id="edit-goal" min="1" max="31" />
           </div>
         </div>
         <div class="form-row two-col">
           <div class="form-group">
-            <label>التكرار</label
+            <label>Frequency</label
             ><select id="edit-freq">
-              <option value="daily">يومي</option>
-              <option value="weekdays">أيام العمل</option>
-              <option value="custom">مخصص</option>
+              <option value="daily">Daily</option>
+              <option value="weekdays">Weekdays</option>
+              <option value="custom">Custom</option>
             </select>
           </div>
           <div class="form-group">
-            <label>وقت التذكير</label><input type="text" id="edit-reminder" />
+            <label>Reminder Time</label><input type="text" id="edit-reminder" />
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label>ملاحظة</label><textarea id="edit-note" rows="2"></textarea>
+            <label>Note</label><textarea id="edit-note" rows="2"></textarea>
           </div>
         </div>
         <div class="modal-actions">
           <button class="btn" onclick="App.closeModal('m-edit-habit')">
-            إلغاء</button
+            Cancel</button
           ><button class="btn btn-dark" onclick="App.submitEditHabit()">
-            حفظ
+            Save
           </button>
         </div>
       </div>
@@ -565,32 +590,32 @@
     <div class="overlay" id="m-add-goal">
       <div class="modal">
         <div class="modal-header">
-          <h3 id="goal-modal-title">هدف جديد</h3>
+          <h3 id="goal-modal-title">New Goal</h3>
           <button class="icon-btn" onclick="App.closeModal('m-add-goal')">
             <svg width="16" height="16"><use href="#ic-x" /></svg>
           </button>
         </div>
         <input type="hidden" id="goal-type" />
         <div class="form-group">
-          <label>الهدف *</label
+          <label>Goal *</label
           ><textarea
             id="goal-text"
             rows="3"
-            placeholder="اكتب هدفك..."
+            placeholder="Write your goal..."
           ></textarea>
         </div>
         <div class="form-group">
-          <label>الموعد النهائي</label
+          <label>Deadline</label
           ><input
             type="text"
             id="goal-deadline"
-            placeholder="نهاية مارس 2026"
+            placeholder="End of March 2026"
           />
         </div>
         <div class="modal-actions">
           <button class="btn" onclick="App.closeModal('m-add-goal')">
-            إلغاء</button
-          ><button class="btn btn-dark" onclick="App.submitGoal()">حفظ</button>
+            Cancel</button
+          ><button class="btn btn-dark" onclick="App.submitGoal()">Save</button>
         </div>
       </div>
     </div>
